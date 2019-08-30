@@ -1,10 +1,7 @@
-from datetime import datetime
-
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, reverse
 from django.http import HttpResponseRedirect
-
 
 from .forms import UserLoginForm, UserSignupForm
 from fines.models import Player
@@ -20,7 +17,7 @@ def login_user(request):
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
-                logger.info(f'Inloggning: {user}, {datetime.now()}')
+                logger.info(f'User login: {user}')
                 return HttpResponseRedirect(reverse('home'))
     else:
         form = UserLoginForm()
@@ -29,7 +26,7 @@ def login_user(request):
 
 def logout_user(request):
     logout(request)
-    logger.info(f'Utloggning: {request.POST}, {datetime.now()}')
+    logger.info(f'User logout: {request.user}')
     return render(request, 'logout.html')
 
 
@@ -56,10 +53,11 @@ def signup(request):
             if player:
                 user.player.set(player)
             else:
-                logger.error(f'Användare skapad utan att koppla till player: {user}, {datetime.now()}')
+                logger.error(f'User created without setting player: {user}')
+
             user = authenticate(username=username, password=password)
             login(request, user)
-            logger.info(f'Användare skapad: {user}, {datetime.now()}')
+            logger.info(f'User created and player was set: {user}')
             return HttpResponseRedirect(reverse('home'))
     else:
         form = UserSignupForm()

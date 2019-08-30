@@ -1,6 +1,5 @@
 import operator
 import logging
-from datetime import datetime
 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
@@ -65,7 +64,8 @@ def new_fine(request):
             return redirect('fines_index')
         else:
             messages.success(request, 'Ny böter tillagd.')
-            logger.info(f'Ny böter tillagd: {fine}, {datetime.now()}')
+
+        logger.info(f'New fine added by {request.user}: {fine}')
     return render(request, 'new_fine.html', {'form': form})
 
 
@@ -75,7 +75,7 @@ def remove_fine(request, pk):
     fine_description = str(fine)
     fine.delete()
     messages.add_message(request, messages.SUCCESS, 'Böter borttagen.')
-    logger.info(f'Böter borttagen: {fine_description}, {datetime.now()}')
+    logger.info(f'Fine removed: {fine_description}')
     return render(request, 'player_detail.html', {'player': player})
 
 
@@ -92,7 +92,7 @@ def register_payment(request):
             return redirect('fines_index')
         else:
             messages.success(request, 'Ny inbetalning tillagd.')
-            logger.info(f'Ny inbetalning tillagd: {payment}, {datetime.now()}')
+        logger.info(f'New paymenet registered:: {payment}')
     return render(request, 'register_payment.html', {'form': form})
 
 
@@ -102,5 +102,5 @@ def remove_payment(request, pk):
     payment_description = str(payment)
     payment.delete()
     messages.add_message(request, messages.SUCCESS, 'Inbetalning borttagen.')
-    logger.info(f'Betalning borttagen: {payment_description}, {datetime.now()}')
+    logger.info(f'Payment removed: {payment_description}')
     return render(request, 'player_detail.html', {'player': player})
