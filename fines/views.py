@@ -4,7 +4,7 @@ import logging
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.http import HttpResponseRedirect
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 
 from .models import Player, Fine, Payment
@@ -31,6 +31,7 @@ def fines_index(request):
     return render(request, 'fines_index.html', context)
 
 
+@login_required
 def player_detail(request, pk):
     player = get_object_or_404(Player, pk=pk)
 
@@ -40,6 +41,7 @@ def player_detail(request, pk):
     return render(request, 'player_detail.html', context)
 
 
+@login_required
 def high_score(request):
     players = sorted(
         Player.objects.all(),
@@ -51,6 +53,8 @@ def high_score(request):
     return render(request, 'high_score.html', context)
 
 
+@login_required
+@user_passes_test(lambda u:u.is_staff, login_url='home')
 def new_fine(request):
     form = FineForm(request.POST or None)
     if form.is_valid():
@@ -69,6 +73,8 @@ def new_fine(request):
     return render(request, 'new_fine.html', {'form': form})
 
 
+@login_required
+@user_passes_test(lambda u:u.is_staff, login_url='home')
 def remove_fine(request, pk):
     fine = get_object_or_404(Fine, pk=pk)
     player = fine.player
@@ -79,6 +85,8 @@ def remove_fine(request, pk):
     return render(request, 'player_detail.html', {'player': player})
 
 
+@login_required
+@user_passes_test(lambda u:u.is_staff, login_url='home')
 def register_payment(request):
     form = RegisterPaymentForm(request.POST or None)
     if form.is_valid():
@@ -96,6 +104,8 @@ def register_payment(request):
     return render(request, 'register_payment.html', {'form': form})
 
 
+@login_required
+@user_passes_test(lambda u:u.is_staff, login_url='home')
 def remove_payment(request, pk):
     payment = get_object_or_404(Payment, pk=pk)
     player = payment.player
