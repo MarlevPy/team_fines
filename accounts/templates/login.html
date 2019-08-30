@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block page_content %}
+<p></p>
+<div class="card">
+    <div class="card-body">
+        <h4 class="card-title">Logga in</h4>
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible text-center" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <strong>{% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}Error{% else %}{{ message.tags|title }}{% endif %}!</strong> {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        {% if next %}
+            {% if user.is_authenticated %}
+                <div class="alert alert-danger" role="alert">
+                    Ditt konto har inte tillgång till den här sidan. Logga in med ett konto som har tillgång för att fortsätta.
+                </div>
+            {% else %}
+                <div class="alert alert-danger" role="alert">
+                    Du behöver vara inloggad för att se denna sida.
+                </div>
+            {% endif %}
+        {% endif %}
+
+        <form method="post" action="">
+            {% csrf_token %}
+
+            {% include 'bs4_form.html' with form=form %}
+            <div class="d-flex">
+                <div>
+                    <button type="submit" class="btn btn-primary">Logga in</button>
+                </div>
+                <div class="ml-auto">
+                    <a href="{% url 'signup' %}" role="button" class="btn btn-secondary">Registrera dig</a>
+                </div>
+            </div>
+
+
+        </form>
+        {# Assumes you setup the password_reset view in your URLconf #}
+        {# <p><a href="{% url 'password_reset' %}">Lost password?</a></p>#}
+    </div>
+</div>
+{% endblock %}

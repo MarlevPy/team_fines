@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block page_content %}
+<p></p>
+<div class="card">
+    <div class="card-body">
+        <h4 class="card-title">Utloggad!</h4>
+        <a href="{% url 'login'%}">Klicka här för att logga in igen.</a>
+    </div>
+</div>
+{% endblock %}

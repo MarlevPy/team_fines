@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% load fines_extras %}
+{% block page_content %}
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible text-center" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <strong>{% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}Error{% else %}{{ message.tags|title }}{% endif %}!</strong> {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
+<h2>{{ player.name }}</h2>
+<div class="row">
+    <div class="col-md-4">
+        <p>Antal böter: {{ player.num_fines }} st</p>
+        <p>Total böter: {{ player.fine_amount }} kr</p>
+        <p>Antal betalningar: {{ player.num_payments }} st</p>
+        <p>Totalt betalat: {{ player.payed }} kr</p>
+    </div>
+</div>
+<h5>Historik</h5>
+<table class="table table-striped table-hover table-sm table-responsive-sm">
+    <thead class="thead-dark">
+    <tr>
+        <th class="align-middle" scope="col">#</th>
+        <th class="align-middle" scope="col">Händelse</th>
+        <th class="align-middle" scope="col">Summa</th>
+        <th class="align-middle" scope="col">Registrerad</th>
+        {% if request.user.is_staff %}
+        <th class="align-middle" scope="col"></th>
+        <th class="align-middle" scope="col"></th>
+        {% endif %}
+    </tr>
+    </thead>
+    <tbody>
+        {% for entity in player.history %}
+        <tr>
+            <th class="align-middle" scope="row">{{ forloop.counter }}</th>
+            {% if entity|is_fine %}
+                <th class="align-middle" scope="row">{{ entity.violation_display }}</th>
+                <th class="align-middle text-danger" scope="row">-{{ entity.amount }} kr</th>
+                <th class="align-middle" scope="row">{{ entity.timestamp|date:'d / m / Y' }}</th>
+            {% else %}
+                <th class="align-middle" scope="row">Inbetalning</th>
+                <th class="align-middle text-success" scope="row">+{{ entity.amount }} kr</th>
+                <th class="align-middle" scope="row">{{ entity.timestamp|date:'d / m / Y' }}</th>
+            {% endif %}
+
+            {% if request.user.is_staff %}
+                {% if entity|is_fine %}
+                    <th class="align-middle" scope="row"><a href="{% url 'remove_fine' entity.pk %}" role="button" class="btn btn-link">Ta bort</a></th>
+                    {% else %}
+                    <th class="align-middle" scope="row"><a href="{% url 'remove_payment' entity.pk %}" role="button" class="btn btn-link">Ta bort</a></th>
+                {% endif %}
+            {% endif %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
