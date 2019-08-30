@@ -45,15 +45,18 @@ def signup(request):
 
             player = get_player(first_name, last_name)
 
-            User.objects.create_user(
+            user = User.objects.create_user(
                 username=username,
                 email=email,
                 password=password,
                 first_name=first_name,
-                last_name=last_name,
-                player=player
+                last_name=last_name
             )
 
+            if player:
+                user.player.set(player)
+            else:
+                logger.error(f'Användare skapad utan att koppla till player: {user}, {datetime.now()}')
             user = authenticate(username=username, password=password)
             login(request, user)
             logger.info(f'Användare skapad: {user}, {datetime.now()}')
