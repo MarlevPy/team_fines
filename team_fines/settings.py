@@ -21,7 +21,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 env = environ.Env(
     DEBUG=(bool, False),
     SECRET_KEY=str,
-    ALLOWED_HOSTS=(list, ['127.0.0.1:8000']),
+    ALLOWED_HOSTS=(list, ['localhost']),
     SECURE_HSTS_PRELOAD=(bool, False),
     SECURE_HSTS_INCLUDE_SUBDOMAINS=(bool, False),
     SECURE_CONTENT_TYPE_NOSNIFF=(bool, False),
@@ -31,6 +31,7 @@ env = environ.Env(
     SECURE_SSL_REDIRECT=(bool, False),
     CSRF_COOKIE_SECURE=(bool, False),
     X_FRAME_OPTIONS=str,
+    SECURE_PROXY_SSL_HEADER=(tuple, ('HTTP_X_FORWARDED_PROTO', 'http')),
 )
 
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
