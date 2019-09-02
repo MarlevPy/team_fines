@@ -9,10 +9,13 @@
     {% if request.user.is_authenticated %}
     <ul class="nav navbar-nav">
       <li class="nav-item {{ fines_page }}">
-        <a class="nav-link" href="{% url 'fines_index' %}">Böter</a>
+        <a class="nav-link" href="{% url 'players_list' %}">Alla spelare</a>
       </li>
       <li class="nav-item {{ high_score_page }}">
-        <a class="nav-link" href="{% url 'high_score' %}">Topplistan</a>
+        <a class="nav-link" href="{% url 'high_score' %}">Topplista</a>
+      </li>
+      <li class="nav-item {{ fines_list_page }}">
+        <a class="nav-link" href="{% url 'fines_list' %}">Böteslista</a>
       </li>
     </ul>
     {% endif %}

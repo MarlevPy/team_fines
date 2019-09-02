@@ -1,4 +1,5 @@
 import operator
+import datetime
 
 from django.db import models
 from django.contrib.auth.models import User
@@ -13,12 +14,13 @@ class Fine(models.Model):
         'wrong_gear': ('Felaktiga kläder på träning', 30),
         'stick_cutoff': ('Avslagen klubba', 100),
         'leave_training': ('Lämnat träning', 100),
-        'game_penalty': ('Utvisning', 10),
+        'penalty_2min': ('Utvisning 2min', 20),
+        'penalty_5min': ('Utvisning 5min', 50),
         'shooting_during_brief': ('Skott under genomgång', 30),
         'forgot_shaker': ('Glömt skakers', 20),
         'pic_in_media': ('Bild i MVT/Corren', 20),
         'interview': ('Intervju i MVT/Corren', 30),
-        'video_interview': ('Intervju i MVT/Corren', 40),
+        'video_interview': ('Videointervju i MVT/Corren', 40),
         'interview_bollius': ('Intervjuad av Bollius', 20),
         'front_page': ('Framsida i tidningen', 50),
         'pic_nationwide_media': ('Bild i rikstäckande media', 30),
@@ -30,6 +32,7 @@ class Fine(models.Model):
     violation = models.CharField(max_length=255, choices=VIOLATION_CHOICES, default=0)
     timestamp = models.DateTimeField(auto_now_add=True)
     player = models.ForeignKey('Player', on_delete=models.CASCADE)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
 
     @property
     def amount(self):
@@ -52,6 +55,7 @@ class Payment(models.Model):
     amount = models.DecimalField(max_digits=4, decimal_places=0)
     timestamp = models.DateTimeField(auto_now_add=True)
     player = models.ForeignKey('Player', on_delete=models.CASCADE)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
         return " | ".join([

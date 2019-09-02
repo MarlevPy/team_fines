@@ -15,46 +15,49 @@ import os
 import logging.config
 import environ
 
-env = environ.Env()
-
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+env = environ.Env(
+    DEBUG=(bool, False),
+    SECRET_KEY=str,
+    ALLOWED_HOSTS=(list, ['localhost']),
+    SECURE_HSTS_PRELOAD=(bool, False),
+    SECURE_HSTS_INCLUDE_SUBDOMAINS=(bool, False),
+    SECURE_CONTENT_TYPE_NOSNIFF=(bool, False),
+    SECURE_BROWSER_XSS_FILTER=(bool, False),
+    SESSION_COOKIE_SECURE=(bool, False),
+    SESSION_COOKIE_HTTPONLY=(bool, False),
+    SECURE_SSL_REDIRECT=(bool, False),
+    CSRF_COOKIE_SECURE=(bool, False),
+    X_FRAME_OPTIONS=str,
+    SECURE_PROXY_SSL_HEADER=(tuple, ('HTTP_X_FORWARDED_PROTO', 'http')),
+)
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
-# SECURITY WARNING: keep the secret key used in production secret!
-with open('/home/marlev89/secret_key.txt') as f:
-    SECRET_KEY = f.read().strip()
+DEBUG = env('DEBUG')
 
+SECRET_KEY = env('SECRET_KEY')
 
 # This ensures that Django will be able to detect a secure connection
 # properly on Heroku.
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_PROXY_SSL_HEADER = env('SECURE_PROXY_SSL_HEADER')# ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # django-secure
 # ------------------------------------------------------------------------------
 
 # set this to 60 seconds and then to 518400 when you can prove it works
 SECURE_HSTS_SECONDS = 60
-SECURE_HSTS_PRELOAD = True
-SECURE_HSTS_INCLUDE_SUBDOMAINS = env.bool(
-    'DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS', default=True)
-SECURE_CONTENT_TYPE_NOSNIFF = env.bool(
-    'DJANGO_SECURE_CONTENT_TYPE_NOSNIFF', default=True)
-SECURE_BROWSER_XSS_FILTER = True
-SESSION_COOKIE_SECURE = True
-SESSION_COOKIE_HTTPONLY = True
-SECURE_SSL_REDIRECT = env.bool('DJANGO_SECURE_SSL_REDIRECT', default=True)
-CSRF_COOKIE_SECURE = True
-X_FRAME_OPTIONS = 'DENY'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
-
-ALLOWED_HOSTS = ['*']
-
+SECURE_HSTS_PRELOAD = env('SECURE_HSTS_PRELOAD')
+SECURE_HSTS_INCLUDE_SUBDOMAINS = env('SECURE_HSTS_INCLUDE_SUBDOMAINS')
+SECURE_CONTENT_TYPE_NOSNIFF = env('SECURE_CONTENT_TYPE_NOSNIFF')
+SECURE_BROWSER_XSS_FILTER = env('SECURE_BROWSER_XSS_FILTER')
+SESSION_COOKIE_SECURE = env('SESSION_COOKIE_SECURE')
+SESSION_COOKIE_HTTPONLY = env('SESSION_COOKIE_HTTPONLY')
+SECURE_SSL_REDIRECT = env('SECURE_SSL_REDIRECT')
+CSRF_COOKIE_SECURE = env('CSRF_COOKIE_SECURE')
+X_FRAME_OPTIONS = env('X_FRAME_OPTIONS')  # 'DENY'
 
 # Application definition
 
@@ -68,7 +71,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'fines',
     'accounts',
-    'djangosecure'
+    'team_fines'
 ]
 
 MIDDLEWARE = [
@@ -159,3 +162,18 @@ LOGOUT_REDIRECT_URL = 'home'
 MESSAGE_TAGS = {
     messages.ERROR: 'danger'
 }
+
+if DEBUG:
+    EMAIL_HOST = 'localhost'
+    EMAIL_PORT = 1025
+    EMAIL_HOST_USER = ''
+    EMAIL_HOST_PASSWORD = ''
+    EMAIL_USE_TLS = False
+    DEFAULT_FROM_EMAIL = 'testing@example.com'
+
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'team.fines@gmail.com'
+EMAIL_HOST_PASSWORD = 'team_fines123'
+EMAIL_PORT = 587
+EMAIL_USE_SSL = True
+EMAIL_USE_TLS = True

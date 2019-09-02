@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block page_content %}
+<div class="table-responsive">
+    <h3>Böteslista</h3>
+    <table class="table table-striped table-sm table-responsive-sm">
+        <thead class="thead-dark">
+        <tr class="table-secondary">
+            <th class="align-middle text-center" scope="col">#</th>
+            <th class="align-middle text-center" scope="col">Beskrivning</th>
+            <th class="align-middle text-center" scope="col">Belopp (kr)</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for fine in fines %}
+            <tr>
+                <td class="align-middle text-center" scope="row">{{ forloop.counter }}</td>
+                <td class="align-middle">{{ fine.0 }}</td>
+                <td class="align-middle text-center">{{ fine.1 }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -12,10 +12,27 @@
 <h2>{{ player.name }}</h2>
 <div class="row">
     <div class="col-md-4">
-        <p>Antal böter: {{ player.num_fines }} st</p>
-        <p>Total böter: {{ player.fine_amount }} kr</p>
-        <p>Antal betalningar: {{ player.num_payments }} st</p>
-        <p>Totalt betalat: {{ player.payed }} kr</p>
+        <div class="row">
+            <div class="col">
+                <b>Antal böter</b>
+                <p class="card-text">{{ player.num_fines }} st</p>
+            </div>
+            <div class="col">
+                <b>Summa böter</b>
+                <p class="card-text">{{ player.fine_amount }} kr</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <b>Antal betalningar</b>
+                <p class="card-text">{{ player.num_payments }} st</p>
+            </div>
+            <div class="col">
+                <b>Summa betalat</b>
+                <p class="card-text">{{ player.payed }} kr</p>
+            </div>
+        </div>
+
     </div>
 </div>
 <h5>Historik</h5>
@@ -24,7 +41,7 @@
     <tr>
         <th class="align-middle" scope="col">#</th>
         <th class="align-middle" scope="col">Händelse</th>
-        <th class="align-middle" scope="col">Summa</th>
+        <th class="align-middle" scope="col">Belopp (kr)</th>
         <th class="align-middle" scope="col">Registrerad</th>
         {% if request.user.is_staff %}
         <th class="align-middle" scope="col"></th>
@@ -39,13 +56,11 @@
             {% if entity|is_fine %}
                 <th class="align-middle" scope="row">{{ entity.violation_display }}</th>
                 <th class="align-middle text-danger" scope="row">-{{ entity.amount }} kr</th>
-                <th class="align-middle" scope="row">{{ entity.timestamp|date:'d / m / Y' }}</th>
             {% else %}
                 <th class="align-middle" scope="row">Inbetalning</th>
                 <th class="align-middle text-success" scope="row">+{{ entity.amount }} kr</th>
-                <th class="align-middle" scope="row">{{ entity.timestamp|date:'d / m / Y' }}</th>
             {% endif %}
-
+            <th class="align-middle" scope="row">{{ entity.timestamp|date:'H:i Y-m-d' }} av {{ entity.created_by.first_name }} {{ entity.created_by.last_name }}</th>
             {% if request.user.is_staff %}
                 {% if entity|is_fine %}
                     <th class="align-middle" scope="row"><a href="{% url 'remove_fine' entity.pk %}" role="button" class="btn btn-link">Ta bort</a></th>
