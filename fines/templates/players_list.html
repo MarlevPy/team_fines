@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block page_content %}
+<p></p>
+<div class="row">
+    {% for player in players %}
+        <div class="col-md-4">
+            <div class="card mb-2">
+                <div class="card-body">
+                    <div class="container">
+                        <h4 class="card-title">{{ player.name }}</h4>
+                        <div class="row py-auto">
+                            <div class="col-sm">
+                                Betalt:
+                                <p class="card-text">{{ player.payed }} kr</p>
+                            </div>
+                            <div class="col-sm">
+                                Böter:
+                                <p class="card-text">{{ player.fine_amount }} kr</p>
+                            </div>
+                            <div class="col-sm">
+                                Att betala:
+                                <p class="card-text {% if player.left_to_pay > 0 %} text-danger {% elif player.left_to_pay < 0 %} text-success {% else %} {% endif %}">{{ player.left_to_pay }} kr</p>
+                            </div>
+                        </div>
+                        <br>
+                    </div>
+                    <a href="{% url 'player_detail' player.pk %}"
+                       class="btn btn-danger btn-sm">
+                        Mer...
+                    </a>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}
