@@ -41,6 +41,11 @@
             <a class="nav-item nav-link" href="{% url 'signup' %}" >Registrera</a>
         </li>
       {% endif %}
+      {% if request.user.is_superuser %}
+      <li>
+        <a class="nav-item nav-link" href="#">Admin</a>
+      </li>
+      {% endif %}
     </ul>
   </div>
 </nav>

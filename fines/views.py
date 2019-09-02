@@ -29,7 +29,7 @@ def fines_index(request):
     fines = sorted(Fine.objects.all(), key=operator.attrgetter('timestamp'), reverse=True)[:10]
     player = request.user.player.first()
 
-    if player.left_to_pay > 0:
+    if player and player.left_to_pay > 0:
         messages.warning(
             request,
             f'Du har {str(player.left_to_pay)} kr kvar att betala till böteskassan. '
@@ -88,7 +88,7 @@ def new_fine(request):
         fine = Fine.objects.create(violation=violation, player=player, created_by=request.user)
 
         subject = '[SIBK Böter] - Ny bot'
-        message = f'Hej, \nDu har åkt på en bot i vårt bötessystem i Solfjäderstadens IBK Herrlag. \n\nDen här gången har du åkt på {fine.violation_display} ({fine.amount} kr). \n\n Betala så snart som möjligt!. \n\n Läs mer under din användare på http://marlev89.pythonanywere.com/ \n\n\n Mvh \nBötessystemet.'
+        message = f'Hej, \nDu har åkt på en bot i vårt bötessystem i Solfjäderstadens IBK Herrlag. \n\nDen här gången har du åkt på {fine.violation_display} ({fine.amount} kr). \n\nBetala så snart som möjligt!. \n\nLäs mer under din användare på http://marlev89.pythonanywere.com/ \n\nVid problem av bötessidan. Hör av er till Levin.\n\n\nMvh \nBötessystemet'
         email_to = User.objects.get(player=player).email
 
         send_threaded_mail(

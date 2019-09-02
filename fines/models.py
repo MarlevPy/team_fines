@@ -1,5 +1,4 @@
 import operator
-import datetime
 
 from django.db import models
 from django.contrib.auth.models import User
@@ -32,7 +31,7 @@ class Fine(models.Model):
     violation = models.CharField(max_length=255, choices=VIOLATION_CHOICES, default=0)
     timestamp = models.DateTimeField(auto_now_add=True)
     player = models.ForeignKey('Player', on_delete=models.CASCADE)
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
 
     @property
     def amount(self):
@@ -55,7 +54,7 @@ class Payment(models.Model):
     amount = models.DecimalField(max_digits=4, decimal_places=0)
     timestamp = models.DateTimeField(auto_now_add=True)
     player = models.ForeignKey('Player', on_delete=models.CASCADE)
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return " | ".join([

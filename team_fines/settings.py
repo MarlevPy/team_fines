@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 from django.contrib.messages import constants as messages
 
 import os
-import logging.config
 import environ
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -39,6 +38,8 @@ environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 DEBUG = env('DEBUG')
 
 SECRET_KEY = env('SECRET_KEY')
+
+ALLOWED_HOSTS = ['*'] #env('ALLOWED_HOSTS') is not working...
 
 # This ensures that Django will be able to detect a secure connection
 # properly on Heroku.
@@ -158,6 +159,7 @@ STATIC_ROOT = STATIC_ROOT = os.path.join(BASE_DIR, "team_fines", "static")
 
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home'
+LOGIN_URL = 'login'
 
 MESSAGE_TAGS = {
     messages.ERROR: 'danger'
@@ -175,5 +177,4 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'team.fines@gmail.com'
 EMAIL_HOST_PASSWORD = 'team_fines123'
 EMAIL_PORT = 587
-EMAIL_USE_SSL = True
 EMAIL_USE_TLS = True
