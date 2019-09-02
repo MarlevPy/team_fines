@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block page_content %}
+<div class="table-responsive">
+    <h3>Topplistan</h3>
+    <table class="table table-striped table-sm table-responsive-sm">
+        <thead class="thead-dark">
+        <tr class="table-secondary">
+            <th class="align-middle text-center" scope="col">#</th>
+            <th class="align-middle" scope="col">Spelare</th>
+            <th class="align-middle text-center" scope="col">Böter (kr)</th>
+            <th class="align-middle text-center" scope="col">Inbetalt (kr)</th>
+            <th class="align-middle text-center" scope="col">Kvar att betala (kr)</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for player in players %}
+            <tr>
+                <td class="align-middle text-center" scope="row">{{ forloop.counter }}</td>
+                <td><a class="nav-link" href="{% url 'player_detail' pk=player.pk %}">{{ player.name }}</a></td>
+                <td class="align-middle text-center">{{ player.fine_amount }}</td>
+                <td class="align-middle text-center">{{ player.payed }}</td>
+                <td class="align-middle text-center {% if player.left_to_pay > 0 %} text-danger {% elif player.left_to_pay < 0 %} text-success {% else %} {% endif %}">{{ player.left_to_pay }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
