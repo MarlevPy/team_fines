@@ -6,5 +6,5 @@ register = template.Library()
 
 
 @register.filter
-def is_fine(entity):
+def is_fine_instance(entity):
     return isinstance(entity, Fine)

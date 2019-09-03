@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load fines_extras %}
+{% block title %} Detaljer: {{ player.name }} {% endblock%}
 {% block page_content %}
 {% if messages %}
     {% for message in messages %}
@@ -53,7 +54,7 @@
         {% for entity in player.history %}
         <tr>
             <th class="align-middle" scope="row">{{ forloop.counter }}</th>
-            {% if entity|is_fine %}
+            {% if entity|is_fine_instance %}
                 <th class="align-middle" scope="row">{{ entity.violation_display }}</th>
                 <th class="align-middle text-danger" scope="row">-{{ entity.amount }} kr</th>
             {% else %}
@@ -62,11 +63,22 @@
             {% endif %}
             <th class="align-middle" scope="row">{{ entity.timestamp|date:'H:i Y-m-d' }} av {{ entity.created_by.first_name }} {{ entity.created_by.last_name }}</th>
             {% if request.user.is_staff %}
-                {% if entity|is_fine %}
+                {% if entity|is_fine_instance %}
                     <th class="align-middle" scope="row"><a href="{% url 'remove_fine' entity.pk %}" role="button" class="btn btn-link">Ta bort</a></th>
                     {% else %}
                     <th class="align-middle" scope="row"><a href="{% url 'remove_payment' entity.pk %}" role="button" class="btn btn-link">Ta bort</a></th>
                 {% endif %}
+            {% endif %}
+        </tr>
+        {% empty %}
+        <tr>
+            <th class="align-middle" scope="row">Inga händelser registrerade</th>
+            <th class="align-middle" scope="row"></th>
+            <th class="align-middle" scope="row"></th>
+            <th class="align-middle" scope="row"></th>
+            {% if request.user.is_staff %}
+                <th class="align-middle" scope="row"></th>
+                <th class="align-middle" scope="row"></th>
             {% endif %}
         </tr>
         {% endfor %}

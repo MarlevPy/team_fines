@@ -1,5 +1,65 @@
 {% extends "base.html" %}
+{% block title %} Start {% endblock%}
 {% block page_content %}
+{% if user.is_authenticated %}
+<p></p>
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible text-center" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <strong>{% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}Error{% else %}{{ message.tags|title }}{% endif %}!</strong> {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
+<div class="container">
+    <h4 class="title">{{ player.name }}</h4>
+    <div class="row">
+        <div class="col">
+            <b>Böter</b>
+            <p class="card-text">{{ player.fine_amount }} kr</p>
+        </div>
+        <div class="col">
+            <b>Betalt</b>
+            <p class="card-text">{{ player.payed }} kr</p>
+        </div>
+        <div class="col">
+            <b>Att betala</b>
+            <p class="card-text {% if player.left_to_pay > 0 %} text-danger {% elif player.left_to_pay < 0 %} text-success {% else %} {% endif %}">{{ player.left_to_pay }} kr</p>
+        </div>
+    </div>
+</div>
+<br>
+<div class="table-responsive">
+    <h3>Senaste böterna</h3>
+    <table class="table table-striped table-sm table-responsive-sm">
+        <thead class="thead-dark">
+        <tr class="table-secondary">
+            <th class="align-middle text-center" scope="col">Överträdelse</th>
+            <th class="align-middle" scope="col">Spelare</th>
+            <th class="align-middle text-center" scope="col">Belopp (kr)</th>
+            <th class="align-middle text-center" scope="col">Registrerad</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for fine in fines%}
+            <tr>
+                <td class="align-middle">{{ fine.violation_display}}</td>
+                <td><a class="nav-link" href="{% url 'player_detail' pk=fine.player.pk %}">{{ fine.player.name}}</a></td>
+                <td class="align-middle text-center">{{ fine.amount }}</td>
+                <td class="align-middle text-center">{{ fine.timestamp|date:'H:i Y-m-d' }} av {{ fine.created_by.first_name }} {{ fine.created_by.last_name }}</td>
+            </tr>
+        {% empty %}
+        <tr>
+            <th class="align-middle" scope="row">Inga händelser registrerade</th>
+            <th class="align-middle" scope="row"></th>
+            <th class="align-middle" scope="row"></th>
+            <th class="align-middle" scope="row"></th>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
 <p></p>
 <div class="card">
     <div class="card-body">
@@ -17,6 +77,5 @@
         </div>
     </div>
 </div>
-
-</div>
+{% endif %}
 {% endblock %}
