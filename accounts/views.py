@@ -31,6 +31,7 @@ def logout_user(request):
 
 
 def signup(request):
+    form = UserSignupForm(request.POST or None)
     if request.method == 'POST':
         form = UserSignupForm(request.POST)
         if form.is_valid():
@@ -59,8 +60,6 @@ def signup(request):
             login(request, user)
             logger.info(f'User created and player was set: {user}')
             return HttpResponseRedirect(reverse('home'))
-    else:
-        form = UserSignupForm()
     return render(request, 'signup.html', {'form': form})
 
 

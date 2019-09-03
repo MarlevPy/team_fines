@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.urls import reverse, resolve
 
-from .views import fines_index, player_detail, high_score
+from .views import index, player_detail, high_score
 from .models import Player, Payment, Fine
 
 
@@ -11,13 +11,13 @@ class FinesTests(TestCase):
         Player.objects.create(name="Spelare 1")
 
     def test_fines_view_status_code(self):
-        url = reverse('fines_index')
+        url = reverse('index')
         response = self.client.get(url)
         self.assertEquals(response.status_code, 200)
 
     def test_fines_url_resolves_fines_view(self):
         view = resolve('/')
-        self.assertEquals(view.func, fines_index)
+        self.assertEquals(view.func, index)
 
     def test_player_detail_success_status_code(self):
         url = reverse('player_detail', kwargs={'pk': 1})

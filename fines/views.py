@@ -3,8 +3,6 @@ import logging
 import threading
 
 from django.shortcuts import render, get_object_or_404, redirect
-from django.urls import reverse
-from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
 from django.contrib import messages
@@ -17,15 +15,8 @@ from .forms import FineForm, RegisterPaymentForm
 logger = logging.getLogger(__name__)
 
 
-def home(request):
-    if request.user.is_authenticated:
-        return HttpResponseRedirect(reverse('fines_index'))
-    else:
-        return render(request, 'index.html')
-
-
 @login_required
-def fines_index(request):
+def index(request):
     fines = sorted(Fine.objects.all(), key=operator.attrgetter('timestamp'), reverse=True)[:10]
     player = request.user.player.first()
 
@@ -37,9 +28,9 @@ def fines_index(request):
 
     context = {
         'player': player,
-        'fines': fines
+        'fines': fines,
     }
-    return render(request, 'fines_index.html', context)
+    return render(request, 'index.html', context)
 
 
 @login_required
@@ -89,23 +80,30 @@ def new_fine(request):
 
         subject = '[SIBK Böter] - Ny bot'
         message = f'Hej, \nDu har åkt på en bot i vårt bötessystem i Solfjäderstadens IBK Herrlag. \n\nDen här gången har du åkt på {fine.violation_display} ({fine.amount} kr). \n\nBetala så snart som möjligt!. \n\nLäs mer under din användare på http://marlev89.pythonanywere.com/ \n\nVid problem av bötessidan. Hör av er till Levin.\n\n\nMvh \nBötessystemet'
-        email_to = User.objects.get(player=player).email
+        user = User.objects.filter(player=player)
 
-        send_threaded_mail(
-            subject=subject,
-            message=message,
-            recipient_list=[email_to],
-            sender=None,
-        )
+        if user:
+            email_to = User.objects.get(player=player).email
 
-        if not create_another:
-            return redirect('fines_index')
-        else:
-            messages.success(request, 'Ny böter tillagd.')
+            send_threaded_mail(
+                subject=subject,
+                message=message,
+                recipient_list=[email_to],
+                sender=None,
+            )
 
+        messages.success(request, 'Ny böter tillagd.')
         logger.info(f'New fine added by {request.user}: {fine}')
 
-    return render(request, 'new_fine.html', {'form': form})
+        if not create_another:
+            return redirect('home')
+
+    context = {
+        'form': form,
+        'title': 'Ny bot'
+    }
+
+    return render(request, 'create_new.html', context)
 
 
 @login_required
@@ -131,12 +129,18 @@ def register_payment(request):
 
         payment = Payment.objects.create(amount=amount, player=player, created_by=request.user)
 
-        if not create_another:
-            return redirect('fines_index')
-        else:
-            messages.success(request, 'Ny inbetalning tillagd.')
+        messages.success(request, 'Ny inbetalning tillagd.')
         logger.info(f'New paymenet registered:: {payment}')
-    return render(request, 'register_payment.html', {'form': form})
+
+        if not create_another:
+            return redirect('home')
+
+    context = {
+        'form': form,
+        'title': 'Registrera betalning'
+    }
+
+    return render(request, 'create_new.html', context)
 
 
 @login_required
