@@ -38,6 +38,9 @@
             <th class="align-middle" scope="col">Spelare</th>
             <th class="align-middle text-center" scope="col">Belopp (kr)</th>
             <th class="align-middle text-center" scope="col">Registrerad</th>
+            {% if request.user.is_staff %}
+                <th class="align-middle text-center" scope="col"></th>
+            {% endif %}
         </tr>
         </thead>
         <tbody>
@@ -47,6 +50,9 @@
                 <td><a class="nav-link" href="{% url 'player_detail' pk=fine.player.pk %}">{{ fine.player.name}}</a></td>
                 <td class="align-middle text-center">{{ fine.amount }}</td>
                 <td class="align-middle text-center">{{ fine.timestamp|date:'H:i Y-m-d' }} av {{ fine.created_by.first_name }} {{ fine.created_by.last_name }}</td>
+                {% if request.user.is_staff %}
+                    <td class="align-middle" scope="row"><a href="{% url 'remove_fine' fine.pk %}" role="button" class="btn btn-link">Ta bort</a></td>
+                {% endif %}
             </tr>
         {% empty %}
         <tr>
@@ -54,6 +60,9 @@
             <th class="align-middle" scope="row"></th>
             <th class="align-middle" scope="row"></th>
             <th class="align-middle" scope="row"></th>
+            {% if request.user.is_staff %}
+                <th class="align-middle" scope="row"></th>
+            {% endif %}
         </tr>
         {% endfor %}
         </tbody>

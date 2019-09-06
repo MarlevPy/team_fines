@@ -16,6 +16,7 @@ class Fine(models.Model):
         'penalty_2min': ('Utvisning 2min', 20),
         'penalty_5min': ('Utvisning 5min', 50),
         'shooting_during_brief': ('Skott under genomgång', 30),
+        'disturbing_during_brief': ('Störning under genomgång', 30),
         'forgot_shaker': ('Glömt skakers', 20),
         'pic_in_media': ('Bild i MVT/Corren', 20),
         'interview': ('Intervju i MVT/Corren', 30),

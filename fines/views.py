@@ -29,6 +29,7 @@ def index(request):
     context = {
         'player': player,
         'fines': fines,
+        'sum_fines': get_total_fines_amount()
     }
     return render(request, 'index.html', context)
 
@@ -38,7 +39,8 @@ def players_list(request):
     players = sorted(Player.objects.all(), key=operator.attrgetter('last_name', 'first_name'))
     context = {
         'players': players,
-        "fines_page": "active"
+        'fines_page': 'active',
+        'sum_fines': get_total_fines_amount()
     }
     return render(request, 'players_list.html', context)
 
@@ -46,13 +48,21 @@ def players_list(request):
 @login_required
 def fines_list(request):
     fines = list(Fine.VIOLATIONS.values())
-    return render(request, 'fines_list.html', {'fines': fines})
+    context = {
+        'fines': fines,
+        'sum_fines': get_total_fines_amount()
+    }
+    return render(request, 'fines_list.html', context)
 
 
 @login_required
 def player_detail(request, pk):
     player = get_object_or_404(Player, pk=pk)
-    return render(request, 'player_detail.html', {'player': player})
+    context = {
+        'player': player,
+        'sum_fines': get_total_fines_amount()
+    }
+    return render(request, 'player_detail.html', context)
 
 
 @login_required
@@ -62,7 +72,8 @@ def high_score(request):
         key=operator.attrgetter('fine_amount', 'last_name', 'first_name'), reverse=True)
     context = {
         'players': players,
-        "high_score_page": "active"
+        'high_score_page': 'active',
+        'sum_fines': get_total_fines_amount()
     }
     return render(request, 'high_score.html', context)
 
@@ -93,14 +104,15 @@ def new_fine(request):
             )
 
         messages.success(request, 'Ny böter tillagd.')
-        logger.info(f'New fine added by {request.user}: {fine}')
+        logger.info(f'New fine added by {request.user}: {str(fine)}')
 
         if not create_another:
             return redirect('home')
 
     context = {
         'form': form,
-        'title': 'Ny bot'
+        'title': 'Ny bot',
+        'sum_fines': get_total_fines_amount()
     }
 
     return render(request, 'create_new.html', context)
@@ -130,14 +142,15 @@ def register_payment(request):
         payment = Payment.objects.create(amount=amount, player=player, created_by=request.user)
 
         messages.success(request, 'Ny inbetalning tillagd.')
-        logger.info(f'New paymenet registered:: {payment}')
+        logger.info(f'New paymenet registered:: {str(payment)}')
 
         if not create_another:
             return redirect('home')
 
     context = {
         'form': form,
-        'title': 'Registrera betalning'
+        'title': 'Registrera betalning',
+        'sum_fines': get_total_fines_amount()
     }
 
     return render(request, 'create_new.html', context)
@@ -172,3 +185,7 @@ class EmailThread(threading.Thread):
 
 def send_threaded_mail(subject, message, recipient_list, sender=None):
     EmailThread(subject, message, recipient_list, sender).start()
+
+
+def get_total_fines_amount():
+    return sum([f.amount for f in Fine.objects.all()])
