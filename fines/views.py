@@ -1,12 +1,13 @@
 import operator
 import logging
-import threading
 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.core.mail import send_mail
+
+from background_task import background
 
 from .models import Player, Fine, Payment
 from .forms import FineForm, RegisterPaymentForm
@@ -94,9 +95,9 @@ def new_fine(request):
         user = User.objects.filter(player=player)
 
         if user:
-            email_to = User.objects.get(player=player).email
+            email_to = user.first().email
 
-            send_threaded_mail(
+            send_background_email(
                 subject=subject,
                 message=message,
                 recipient_list=[email_to],
@@ -168,23 +169,10 @@ def remove_payment(request, pk):
     return render(request, 'player_detail.html', {'player': player})
 
 
-class EmailThread(threading.Thread):
-    def __init__(self, subject, message, recipient_list, sender=None):
-        self.subject = subject
-        self.recipient_list = recipient_list
-        self.message = message
-        self.sender = sender
-        threading.Thread.__init__(self)
-
-    def run(self):
-        try:
-            send_mail(self.subject, self.message, self.sender, self.recipient_list)
-        except TimeoutError:
-            logger.error(f'Could not send mail to {self.recipient_list}.')
-
-
-def send_threaded_mail(subject, message, recipient_list, sender=None):
-    EmailThread(subject, message, recipient_list, sender).start()
+@background(schedule=5)
+def send_background_email(subject, message, recipient_list, sender=None):
+    send_mail(subject, message, sender, recipient_list)
+    logger.info(f'Sent email to: {recipient_list}.')
 
 
 def get_total_fines_amount():
