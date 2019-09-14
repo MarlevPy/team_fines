@@ -72,7 +72,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'fines',
     'accounts',
-    'team_fines'
+    'team_fines',
+    'background_task',
 ]
 
 MIDDLEWARE = [
