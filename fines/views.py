@@ -30,7 +30,8 @@ def index(request):
     context = {
         'player': player,
         'fines': fines,
-        'sum_fines': get_total_fines_amount()
+        'sum_fines': get_total_fines_amount(),
+        'sum_payed': get_total_payed_amount(),
     }
     return render(request, 'index.html', context)
 
@@ -41,7 +42,8 @@ def players_list(request):
     context = {
         'players': players,
         'fines_page': 'active',
-        'sum_fines': get_total_fines_amount()
+        'sum_fines': get_total_fines_amount(),
+        'sum_payed': get_total_payed_amount(),
     }
     return render(request, 'players_list.html', context)
 
@@ -51,7 +53,8 @@ def fines_list(request):
     fines = list(Fine.VIOLATIONS.values())
     context = {
         'fines': fines,
-        'sum_fines': get_total_fines_amount()
+        'sum_fines': get_total_fines_amount(),
+        'sum_payed': get_total_payed_amount(),
     }
     return render(request, 'fines_list.html', context)
 
@@ -61,7 +64,8 @@ def player_detail(request, pk):
     player = get_object_or_404(Player, pk=pk)
     context = {
         'player': player,
-        'sum_fines': get_total_fines_amount()
+        'sum_fines': get_total_fines_amount(),
+        'sum_payed': get_total_payed_amount(),
     }
     return render(request, 'player_detail.html', context)
 
@@ -74,7 +78,8 @@ def high_score(request):
     context = {
         'players': players,
         'high_score_page': 'active',
-        'sum_fines': get_total_fines_amount()
+        'sum_fines': get_total_fines_amount(),
+        'sum_payed': get_total_payed_amount(),
     }
     return render(request, 'high_score.html', context)
 
@@ -113,7 +118,8 @@ def new_fine(request):
     context = {
         'form': form,
         'title': 'Ny bot',
-        'sum_fines': get_total_fines_amount()
+        'sum_fines': get_total_fines_amount(),
+        'sum_payed': get_total_payed_amount(),
     }
 
     return render(request, 'create_new.html', context)
@@ -151,7 +157,8 @@ def register_payment(request):
     context = {
         'form': form,
         'title': 'Registrera betalning',
-        'sum_fines': get_total_fines_amount()
+        'sum_fines': get_total_fines_amount(),
+        'sum_payed': get_total_payed_amount(),
     }
 
     return render(request, 'create_new.html', context)
@@ -177,3 +184,7 @@ def send_background_email(subject, message, recipient_list, sender=None):
 
 def get_total_fines_amount():
     return sum([f.amount for f in Fine.objects.all()])
+
+
+def get_total_payed_amount():
+    return sum([p.amount for p in Payment.objects.all()])
