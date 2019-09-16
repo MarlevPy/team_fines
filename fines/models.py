@@ -25,6 +25,8 @@ class Fine(models.Model):
         'front_page': ('Framsida i tidningen', 50),
         'pic_nationwide_media': ('Bild i rikstäckande media', 30),
         'interview_nationwide_media': ('Intervju i rikstäckande media', 30),
+        'sponsor_20kr': ('Sponsring', 20),
+        'sponsor_50kr': ('Sponsring', 50),
     }
 
     VIOLATION_CHOICES = [(key, value[0]) for key, value in VIOLATIONS.items()]
