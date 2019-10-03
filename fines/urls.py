@@ -12,4 +12,6 @@ urlpatterns = [
     path('remove_fine/<int:pk>/', views.remove_fine, name='remove_fine'),
     path('register_payment', views.register_payment, name='register_payment'),
     path('remove_payment/<int:pk>/', views.remove_payment, name='remove_payment'),
+    path('register_sponsoring', views.register_sponsoring, name='register_sponsoring'),
+    path('remove_sponsor/<int:pk>/', views.remove_sponsor, name='remove_sponsor'),
 ]

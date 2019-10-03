@@ -33,6 +33,9 @@
       <li>
         <a class="nav-item nav-link" href="{% url 'register_payment' %}">Registrera inbetalning</a>
       </li>
+      <li>
+        <a class="nav-item nav-link" href="{% url 'register_sponsoring' %}">Registrera sponsring <span class="badge badge-pill badge-danger">Ny</span></a>
+      </li>
       {% endif %}
       {% if request.user.is_authenticated %}
         <li>

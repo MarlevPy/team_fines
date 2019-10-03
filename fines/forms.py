@@ -36,3 +36,14 @@ class RegisterPaymentForm(forms.Form):
     player = forms.ChoiceField(choices=player_choices, label='Spelare')
 
     amount = forms.DecimalField(max_digits=4, decimal_places=0, label='Belopp')
+
+
+class RegisterSponsorForm(forms.Form):
+    player_choices = [('', '-' * 20)]
+    try:
+        player_choices += sorted([(p.id, p.name) for p in Player.objects.all()], key=operator.itemgetter(1))
+    except OperationalError:
+        pass
+    player = forms.ChoiceField(choices=player_choices, label='Spelare')
+
+    amount = forms.DecimalField(max_digits=4, decimal_places=0, label='Belopp')

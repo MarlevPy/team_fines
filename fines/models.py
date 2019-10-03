@@ -25,8 +25,6 @@ class Fine(models.Model):
         'front_page': ('Framsida i tidningen', 50),
         'pic_nationwide_media': ('Bild i rikstäckande media', 30),
         'interview_nationwide_media': ('Intervju i rikstäckande media', 30),
-        'sponsor_20kr': ('Sponsring', 20),
-        'sponsor_50kr': ('Sponsring', 50),
     }
 
     VIOLATION_CHOICES = [(key, value[0]) for key, value in VIOLATIONS.items()]
@@ -38,11 +36,21 @@ class Fine(models.Model):
 
     @property
     def amount(self):
-        return self.VIOLATIONS.get(self.violation)[1]
+        # Added if-statement for handling deprecated violations.
+        if self.violation == 'sponsor_20kr':
+            return 20
+        elif self.violation == 'sponsor_50kr':
+            return 50
+        else:
+            return self.VIOLATIONS.get(self.violation)[1]
 
     @property
     def violation_display(self):
-        return self.get_violation_display()
+        # Added if-statement for handling deprecated violations.
+        if self.violation in ('sponsor_20kr', 'sponsor_50kr'):
+            return 'Sponsring'
+        else:
+            return self.get_violation_display()
 
     def __str__(self):
         return " | ".join([
@@ -54,6 +62,20 @@ class Fine(models.Model):
 
 
 class Payment(models.Model):
+    amount = models.DecimalField(max_digits=4, decimal_places=0)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    player = models.ForeignKey('Player', on_delete=models.CASCADE)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+
+    def __str__(self):
+        return " | ".join([
+            self.player.name,
+            " ".join([str(self.amount), "kr"]),
+            self.timestamp.strftime('%d/%m/%Y')
+        ])
+
+
+class Sponsor(models.Model):
     amount = models.DecimalField(max_digits=4, decimal_places=0)
     timestamp = models.DateTimeField(auto_now_add=True)
     player = models.ForeignKey('Player', on_delete=models.CASCADE)
@@ -109,10 +131,15 @@ class Player(models.Model):
         return len(self.payments)
 
     @property
+    def sponsors(self):
+        return self.sponsor_set.all()
+
+    @property
     def history(self):
         payments = self.payments
         fines = self.fines
-        history = sorted([i for i in payments] + [i for i in fines], key=operator.attrgetter("timestamp"), reverse=True)
+        sponsors = self.sponsors
+        history = sorted([i for i in payments] + [i for i in fines] + [i for i in sponsors], key=operator.attrgetter("timestamp"), reverse=True)
         return history
 
     def __str__(self):

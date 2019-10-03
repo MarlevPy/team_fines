@@ -9,8 +9,8 @@ from django.core.mail import send_mail
 
 from background_task import background
 
-from .models import Player, Fine, Payment
-from .forms import FineForm, RegisterPaymentForm
+from .models import Player, Fine, Payment, Sponsor
+from .forms import FineForm, RegisterPaymentForm, RegisterSponsorForm
 
 
 logger = logging.getLogger(__name__)
@@ -18,7 +18,10 @@ logger = logging.getLogger(__name__)
 
 @login_required
 def index(request):
-    fines = sorted(Fine.objects.all(), key=operator.attrgetter('timestamp'), reverse=True)[:10]
+    fines = Fine.objects.all()
+    sponsors = Sponsor.objects.all()
+    history = sorted([i for i in fines] + [i for i in sponsors], key=operator.attrgetter('timestamp'), reverse=True)[:20]
+
     player = request.user.player.first()
 
     if player and player.left_to_pay > 0:
@@ -29,7 +32,7 @@ def index(request):
 
     context = {
         'player': player,
-        'fines': fines,
+        'history': history,
         'sum_fines': get_total_fines_amount(),
         'sum_payed': get_total_payed_amount(),
     }
@@ -139,6 +142,18 @@ def remove_fine(request, pk):
 
 @login_required
 @user_passes_test(lambda u:u.is_staff, login_url='home')
+def remove_sponsor(request, pk):
+    sponsor = get_object_or_404(Sponsor, pk=pk)
+    player = sponsor.player
+    sponsor_description = str(sponsor)
+    sponsor.delete()
+    messages.add_message(request, messages.SUCCESS, 'Sponsor borttagen.')
+    logger.info(f'Sponsor removed: {sponsor_description}')
+    return render(request, 'player_detail.html', {'player': player})
+
+
+@login_required
+@user_passes_test(lambda u:u.is_staff, login_url='home')
 def register_payment(request):
     form = RegisterPaymentForm(request.POST or None)
     if form.is_valid():
@@ -157,6 +172,33 @@ def register_payment(request):
     context = {
         'form': form,
         'title': 'Registrera betalning',
+        'sum_fines': get_total_fines_amount(),
+        'sum_payed': get_total_payed_amount(),
+    }
+
+    return render(request, 'create_new.html', context)
+
+
+@login_required
+@user_passes_test(lambda u:u.is_staff, login_url='home')
+def register_sponsoring(request):
+    form = RegisterSponsorForm(request.POST or None)
+    if form.is_valid():
+        player = get_object_or_404(Player, pk=request.POST.get('player'))
+        amount = request.POST.get('amount')
+        create_another = bool(request.POST.get('create_another', False))
+
+        sponsoring = Sponsor.objects.create(amount=amount, player=player, created_by=request.user)
+
+        messages.success(request, 'Ny sponsring tillagd.')
+        logger.info(f'New sponsoring registered:: {str(sponsoring)}')
+
+        if not create_another:
+            return redirect('home')
+
+    context = {
+        'form': form,
+        'title': 'Registrera sponsring',
         'sum_fines': get_total_fines_amount(),
         'sum_payed': get_total_payed_amount(),
     }
