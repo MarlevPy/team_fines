@@ -35,6 +35,7 @@ def index(request):
         'history': history,
         'sum_fines': get_total_fines_amount(),
         'sum_payed': get_total_payed_amount(),
+        'sum_sponsor': get_total_sponsor_amount(),
     }
     return render(request, 'index.html', context)
 
@@ -47,6 +48,7 @@ def players_list(request):
         'fines_page': 'active',
         'sum_fines': get_total_fines_amount(),
         'sum_payed': get_total_payed_amount(),
+        'sum_sponsor': get_total_sponsor_amount(),
     }
     return render(request, 'players_list.html', context)
 
@@ -58,6 +60,7 @@ def fines_list(request):
         'fines': fines,
         'sum_fines': get_total_fines_amount(),
         'sum_payed': get_total_payed_amount(),
+        'sum_sponsor': get_total_sponsor_amount(),
     }
     return render(request, 'fines_list.html', context)
 
@@ -69,6 +72,7 @@ def player_detail(request, pk):
         'player': player,
         'sum_fines': get_total_fines_amount(),
         'sum_payed': get_total_payed_amount(),
+        'sum_sponsor': get_total_sponsor_amount(),
     }
     return render(request, 'player_detail.html', context)
 
@@ -83,6 +87,7 @@ def high_score(request):
         'high_score_page': 'active',
         'sum_fines': get_total_fines_amount(),
         'sum_payed': get_total_payed_amount(),
+        'sum_sponsor': get_total_sponsor_amount(),
     }
     return render(request, 'high_score.html', context)
 
@@ -123,6 +128,7 @@ def new_fine(request):
         'title': 'Ny bot',
         'sum_fines': get_total_fines_amount(),
         'sum_payed': get_total_payed_amount(),
+        'sum_sponsor': get_total_sponsor_amount(),
     }
 
     return render(request, 'create_new.html', context)
@@ -137,7 +143,13 @@ def remove_fine(request, pk):
     fine.delete()
     messages.add_message(request, messages.SUCCESS, 'Böter borttagen.')
     logger.info(f'Fine removed: {fine_description}')
-    return render(request, 'player_detail.html', {'player': player})
+    context = {
+        'player': player,
+        'sum_fines': get_total_fines_amount(),
+        'sum_payed': get_total_payed_amount(),
+        'sum_sponsor': get_total_sponsor_amount(),
+    }
+    return render(request, 'player_detail.html', context)
 
 
 @login_required
@@ -149,7 +161,13 @@ def remove_sponsor(request, pk):
     sponsor.delete()
     messages.add_message(request, messages.SUCCESS, 'Sponsor borttagen.')
     logger.info(f'Sponsor removed: {sponsor_description}')
-    return render(request, 'player_detail.html', {'player': player})
+    context = {
+        'player': player,
+        'sum_fines': get_total_fines_amount(),
+        'sum_payed': get_total_payed_amount(),
+        'sum_sponsor': get_total_sponsor_amount(),
+    }
+    return render(request, 'player_detail.html', context)
 
 
 @login_required
@@ -174,6 +192,7 @@ def register_payment(request):
         'title': 'Registrera betalning',
         'sum_fines': get_total_fines_amount(),
         'sum_payed': get_total_payed_amount(),
+        'sum_sponsor': get_total_sponsor_amount(),
     }
 
     return render(request, 'create_new.html', context)
@@ -201,6 +220,7 @@ def register_sponsoring(request):
         'title': 'Registrera sponsring',
         'sum_fines': get_total_fines_amount(),
         'sum_payed': get_total_payed_amount(),
+        'sum_sponsor': get_total_sponsor_amount(),
     }
 
     return render(request, 'create_new.html', context)
@@ -230,3 +250,7 @@ def get_total_fines_amount():
 
 def get_total_payed_amount():
     return sum([p.amount for p in Payment.objects.all()])
+
+
+def get_total_sponsor_amount():
+    return sum([s.amount for s in Sponsor.objects.all()])
