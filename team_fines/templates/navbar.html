@@ -2,7 +2,7 @@
   <div class="flex-column">
     <a class="navbar-brand flex-sm-fill text-sm-center " href="{% url 'home' %}">SIBK Böter</a>
     {% if request.user.is_authenticated %}
-    <span class="badge badge-secondary flex-sm-fill text-left">Böteskassa: {{ sum_payed }}/{{ sum_fines }} kr<br>Sponsring: {{ sum_sponsor }} kr<br>Totalt: {{ sum_fines|add:sum_sponsor }} kr</span>
+    <span class="badge badge-secondary flex-sm-fill text-left">Böteskassa: {{ sum_payed }}/{{ sum_fines }} kr<br>Sponsring: {{ sum_sponsor }} kr<br><br>Totalt: {{ sum_fines|add:sum_sponsor }} kr</span>
     {% endif %}
   </div>
 
