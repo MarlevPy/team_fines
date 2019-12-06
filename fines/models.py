@@ -25,7 +25,8 @@ class Fine(models.Model):
         'front_page': ('Framsida i tidningen', 50),
         'pic_nationwide_media': ('Bild i rikstäckande media', 30),
         'interview_nationwide_media': ('Intervju i rikstäckande media', 30),
-        'missed_penalty_shot': ('Missad straff', 30)
+        'missed_penalty_shot': ('Missad straff', 30),
+        'shaved_during_november': ('Rakat sig under No-Shave November', 400),
     }
 
     VIOLATION_CHOICES = [(key, value[0]) for key, value in VIOLATIONS.items()]
